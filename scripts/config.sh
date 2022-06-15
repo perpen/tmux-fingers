@@ -79,6 +79,10 @@ function default_copy_command () {
 }
 
 function default_open_command () {
+  #hfd
+  echo "xargs plumbo consider"
+  return 0
+
   if [[ $(program_exists "cygstart") = "1" ]]; then
     echo "xargs cygstart"
   elif [[ $(program_exists "xdg-open") = "1" ]]; then

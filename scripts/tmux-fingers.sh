@@ -12,9 +12,10 @@ function init_fingers_pane() {
   local fingers_pane_id=$(echo "$fingers_ids" | cut -f1 -d:)
   local fingers_window_id=$(echo "$fingers_ids" | cut -f2 -d:)
 
-  local current_size=$(tmux list-panes -F "#{pane_width}:#{pane_height}:#{?pane_active,active,nope}" | grep active)
+  local current_size=$(tmux list-panes -F "#{pane_width}:#{pane_height}:#{?pane_active,active,nope}:#{pane_current_path}" | grep active)
   local current_width=$(echo "$current_size" | cut -f1 -d:)
   local current_height=$(echo "$current_size" | cut -f2 -d:)
+  local fingers_current_path=$(echo "$current_size" | cut -f4 -d:)
 
   local current_window_size=$(tmux list-windows -F "#{window_width}:#{window_height}:#{?window_active,active,nope}" | grep active)
   local current_window_width=$(echo "$current_window_size" | cut -f1 -d:)
@@ -28,7 +29,7 @@ function init_fingers_pane() {
     tmux split-window -d -t "$fingers_pane_id" -l "$(expr "$current_window_height" - "$current_height" - 1)" '/bin/nop'
   fi
 
-  echo "$fingers_pane_id:$fingers_window_id"
+  echo "$fingers_pane_id:$fingers_window_id:$fingers_current_path"
 }
 
 function capture_pane() {
@@ -59,6 +60,7 @@ function prompt_fingers_for_pane() {
   local fingers_init_data=$(init_fingers_pane)
   local fingers_pane_id=$(echo "$fingers_init_data" | cut -f1 -d':')
   local fingers_window_id=$(echo "$fingers_init_data" | cut -f2 -d':')
+  local fingers_current_path=$(echo "$fingers_init_data" | cut -f3 -d':')
   local tmp_path=$(fingers_tmp)
 
   wait
@@ -67,7 +69,7 @@ function prompt_fingers_for_pane() {
 
   local original_window_name=$(tmux display-message -p '#{window_name}')
   tmux set-window-option automatic-rename off
-  pane_exec "$fingers_pane_id" "cat $tmp_path | $CURRENT_DIR/fingers-mode.sh \"$current_pane_id\" \"$fingers_pane_id\" \"$last_pane_id\" \"$fingers_window_id\" \"$tmp_path\" \"$original_window_name\" \"$input_method\""
+  pane_exec "$fingers_pane_id" "cat $tmp_path | $CURRENT_DIR/fingers-mode.sh \"$current_pane_id\" \"$fingers_pane_id\" \"$last_pane_id\" \"$fingers_window_id\" \"$tmp_path\" \"$original_window_name\" \"$input_method\" \"$fingers_current_path\""
 
   echo $fingers_pane_id
 }

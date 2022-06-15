@@ -17,6 +17,8 @@ fingers_window_id=$4
 pane_input_temp=$5
 original_window_name=$6
 input_method=$7
+current_path=$8
+echo current_path: $current_path >>/tmp/oo
 
 function rename_fingers_window() {
   tmux rename-window -t "$fingers_window_id" "$1"
@@ -119,7 +121,7 @@ function run_shell_action() {
   local command_to_run="$1"
 
   if [[ ! -z $command_to_run ]]; then
-    tmux run-shell -b "printf \"$(escape_quotes "${state[final_result]}")\" | MODIFIER=${state[modifier]} HINT=${state[input]} $EXEC_PREFIX $command_to_run"
+    tmux run-shell -b "cd $current_path; printf \"$(escape_quotes "${state[final_result]}")\" | MODIFIER=${state[modifier]} HINT=${state[input]} $EXEC_PREFIX $command_to_run"
   fi
 }
 
