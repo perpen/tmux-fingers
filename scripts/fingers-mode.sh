@@ -18,7 +18,6 @@ pane_input_temp=$5
 original_window_name=$6
 input_method=$7
 current_path=$8
-echo current_path: $current_path >>/tmp/oo
 
 function rename_fingers_window() {
   tmux rename-window -t "$fingers_window_id" "$1"
